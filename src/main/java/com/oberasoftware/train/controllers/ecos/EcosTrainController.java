@@ -30,7 +30,7 @@ public class EcosTrainController implements TrainController {
 			ecosReceiver = new EcosProtocolReceiver(ecosSocket);
 			ecosSender = new EcosProtocolSender(ecosSocket);
 			
-			ecosReceiver.startReceiver();
+			ecosReceiver.start();
 			ecosSender.start();
 		} catch(IOException e) {
 			throw new ConnectionException("Unable to connect to Ecos Control center, due too IOException", e);
@@ -46,7 +46,7 @@ public class EcosTrainController implements TrainController {
 	public void disconnect() throws ConnectionException {
 		try {
 			this.ecosSender.stop();
-			this.ecosReceiver.stopReceiver();
+			this.ecosReceiver.stop();
 
 			this.ecosSocket.close();
 		} catch(IOException e) {

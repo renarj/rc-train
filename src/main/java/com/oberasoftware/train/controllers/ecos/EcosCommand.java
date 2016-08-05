@@ -1,5 +1,7 @@
 package com.oberasoftware.train.controllers.ecos;
 
+import com.oberasoftware.train.controllers.ecos.messages.EcosMessageParameter;
+
 import java.util.List;
 
 /**
@@ -27,9 +29,9 @@ public class EcosCommand {
 
     private final int objectId;
     private final CommandType commandType;
-    private final List<EcosCommandParameter> parameters;
+    private final List<EcosMessageParameter> parameters;
 
-    public EcosCommand(int objectId, CommandType commandType, List<EcosCommandParameter> parameters) {
+    public EcosCommand(int objectId, CommandType commandType, List<EcosMessageParameter> parameters) {
         this.objectId = objectId;
         this.commandType = commandType;
         this.parameters = parameters;
@@ -43,7 +45,7 @@ public class EcosCommand {
         return commandType;
     }
 
-    public List<EcosCommandParameter> getParameters() {
+    public List<EcosMessageParameter> getParameters() {
         return parameters;
     }
 
@@ -52,9 +54,9 @@ public class EcosCommand {
         builder.append(commandType.getName()).append("(");
         builder.append(objectId);
 
-        for(EcosCommandParameter parameter : parameters) {
+        for(EcosMessageParameter parameter : parameters) {
             builder.append(", ");
-            builder.append(parameter.getParameter());
+            builder.append(parameter.getName());
             if(!parameter.getAttributes().isEmpty()) {
                 builder.append(getAttribute(parameter));
             }
@@ -64,7 +66,7 @@ public class EcosCommand {
         return builder.toString();
     }
 
-    private String getAttribute(EcosCommandParameter parameter) {
+    private String getAttribute(EcosMessageParameter parameter) {
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         boolean first = true;
@@ -79,6 +81,8 @@ public class EcosCommand {
                 builder.append("\"");
                 builder.append(attribute);
                 builder.append("\"");
+            } else {
+                builder.append(attribute);
             }
 
         }
