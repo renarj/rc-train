@@ -1,6 +1,7 @@
 package com.oberasoftware.train.controllers.ecos;
 
 import com.oberasoftware.base.event.EventBus;
+import com.oberasoftware.train.controllers.ecos.messages.EcosReceivedMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,11 +56,12 @@ public class EcosProtocolReceiver implements Runnable {
 			while(isRunning.get() && !Thread.currentThread().isInterrupted()) {
 				LOG.debug("Waiting for an incoming message from Ecos Controller");
 
-                while(!messageParser.pushLine(inputReader.readLine())) {
+                Optional<EcosReceivedMessage> receivedMessage;
+                while((receivedMessage = messageParser.pushLine(inputReader.readLine())).isPresent()) {
                     LOG.debug("Received a line: {}", messageParser.getLastLine());
                 }
 
-				eventBus.publish(messageParser.getLastMessage());
+				eventBus.publish(receivedMessage.get());
 			}
 		} catch(IOException e) {
             LOG.debug("Ecos Controller IO Channel was closed");
