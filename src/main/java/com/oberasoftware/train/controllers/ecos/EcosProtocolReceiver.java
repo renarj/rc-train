@@ -1,5 +1,6 @@
 package com.oberasoftware.train.controllers.ecos;
 
+import com.oberasoftware.base.event.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class EcosProtocolReceiver implements Runnable {
 
     @Autowired
     private EcosMessageParser messageParser;
+
+    @Autowired
+    private EventBus eventBus;
 	
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -51,25 +55,10 @@ public class EcosProtocolReceiver implements Runnable {
 				LOG.debug("Waiting for an incoming message from Ecos Controller");
 
                 while(!messageParser.pushLine(inputReader.readLine())) {
-
+                    LOG.debug("Received a line: {}", messageParser.getLastLine());
                 }
-//				EcosMessageBuilder messageBuilder = new EcosMessageBuilder();
-//				String returnMessage = "";
-//				while(!messageBuilder.isMessageComplete() && (returnMessage = inputReader.readLine()) != null) {
-//					LOG.debug("Received a partial message fragment: " + returnMessage);
-//					messageBuilder.pushResponse(returnMessage);
-//				}
-//
-//				EcosMessage ecosMessage = messageBuilder.getEcosMessage();
-//				if(ecosMessage != null) {
-//					LOG.debug("Finished receive of message: " + ecosMessage.getMessageAsString());
-//
-//					//blockingMessageQueue.put(ecosMessage);
-//
-//					handlerCallback(ecosMessage);
-//				} else {
-//                    LOG.error("The decoding of the received message was unsuccesfull");
-//				}
+
+				eventBus.publish(messageParser.getLastMessage());
 			}
 		} catch(IOException e) {
             LOG.debug("Ecos Controller IO Channel was closed");
