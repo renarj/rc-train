@@ -31,14 +31,11 @@ public class EcosProtocolReceiver implements Runnable {
 	
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public EcosProtocolReceiver(Socket clientSocket) {
-		this.clientSocket = clientSocket;
-	}
-	
-	public void start() {
+	public void start(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+
 		LOG.info("Create the Ecos Controller receiver thread");
 		isRunning.set(true);
-		
         executorService.submit(this);
 	}
 	

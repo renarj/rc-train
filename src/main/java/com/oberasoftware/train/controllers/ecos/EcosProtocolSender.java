@@ -3,6 +3,7 @@ package com.oberasoftware.train.controllers.ecos;
 import com.oberasoftware.train.api.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,10 +14,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Component
 public class EcosProtocolSender implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(EcosProtocolSender.class);
 	
-	private Socket ecosSocket;
+	private Socket clientSocket;
 	private PrintWriter printWriter;
 	private BlockingQueue<EcosCommand> messageQueue = new LinkedBlockingQueue<>();
 	
@@ -24,17 +26,14 @@ public class EcosProtocolSender implements Runnable {
 
 	private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public EcosProtocolSender(Socket ecosSocket) {
-		this.ecosSocket = ecosSocket;
-	}
-
 	public void publish(EcosCommand ecosCommand) throws ConnectionException {
 		this.messageQueue.add(ecosCommand);
 	}
 
-	public void start() throws ConnectionException {
+	public void start(Socket clientSocket) throws ConnectionException {
+        this.clientSocket = clientSocket;
 		try {
-			printWriter = new PrintWriter(ecosSocket.getOutputStream(), true);
+			printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
 
 			isRunning.set(true);
             executorService.submit(this);

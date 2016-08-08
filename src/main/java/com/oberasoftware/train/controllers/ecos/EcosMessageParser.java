@@ -93,7 +93,7 @@ public class EcosMessageParser {
                 String message = footerMatcher.group(2);
                 if (statusCode == ALL_OK) {
                     if(headerLine.contains("<REPLY")) {
-                        return ofNullable(buildReplyMessage());
+                        return of(buildReplyMessage());
                     } else if(headerLine.contains("<EVENT")) {
                         return ofNullable(buildEventMessage());
                     } else {
