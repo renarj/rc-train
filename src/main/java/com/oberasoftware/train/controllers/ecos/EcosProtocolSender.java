@@ -55,7 +55,7 @@ public class EcosProtocolSender implements Runnable {
                 EcosCommand command = this.messageQueue.take();
                 String sendMessage = command.getCommand();
 
-                LOG.debug("Sending message to Ecos controller: {}", sendMessage);
+                LOG.info("Sending message to Ecos controller: {}", sendMessage);
                 printWriter.println(sendMessage);
 			} catch(InterruptedException e) {
                 LOG.error("Interrupted while waiting for a queue item", e);

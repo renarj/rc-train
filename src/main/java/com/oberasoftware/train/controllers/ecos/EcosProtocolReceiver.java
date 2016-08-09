@@ -1,6 +1,6 @@
 package com.oberasoftware.train.controllers.ecos;
 
-import com.oberasoftware.base.event.EventBus;
+import com.oberasoftware.home.core.mqtt.MQTTTopicEventBus;
 import com.oberasoftware.train.controllers.ecos.messages.EcosReceivedMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class EcosProtocolReceiver implements Runnable {
     private EcosMessageParser messageParser;
 
     @Autowired
-    private EventBus eventBus;
+    private MQTTTopicEventBus eventBus;
 	
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -51,19 +51,22 @@ public class EcosProtocolReceiver implements Runnable {
 			BufferedReader inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			
 			while(isRunning.get() && !Thread.currentThread().isInterrupted()) {
-				LOG.debug("Waiting for an incoming message from Ecos Controller");
+				LOG.info("Waiting for an incoming message from Ecos Controller");
 
-                Optional<EcosReceivedMessage> receivedMessage;
-                while((receivedMessage = messageParser.pushLine(inputReader.readLine())).isPresent()) {
-                    LOG.debug("Received a line: {}", messageParser.getLastLine());
+                String line = inputReader.readLine();
+                LOG.info("Received a line: {}", line);
+                Optional<EcosReceivedMessage> received = messageParser.pushLine(line);
+                if(received.isPresent()) {
+                    LOG.info("Received a complete message: {}", received);
+//                    eventBus.publish(received.get());
                 }
-
-				eventBus.publish(receivedMessage.get());
 			}
 		} catch(IOException e) {
-            LOG.debug("Ecos Controller IO Channel was closed");
+            LOG.error("Ecos Controller IO Channel was closed");
 			isRunning.set(false);
-		}
+		} catch(Exception e) {
+            LOG.error("", e);
+        }
 		LOG.info("Ecos Receiver thread has stopped");
 	}
 

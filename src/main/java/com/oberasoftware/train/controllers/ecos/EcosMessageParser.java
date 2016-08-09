@@ -21,37 +21,6 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
-/**
- * @author Renze de Vries
- *
- * <EVENT 1005>
-1005 speed[44]
-1005 speedstep[44]
-<END 0 (OK)>
-
-
-REPLY get(1, control)>
-1 control[none]
-<END 0 (OK)>
-
-<REPLY queryObjects(10, name)>
-1000 name["ice"]
-1001 name["trix 6408"]
-1002 name["ns1613"]
-1003 name["db103"]
-1004 name["NS 1858 H0"]
-1005 name["MaK G1206"]
-1006 name["DB 9254(H0)"]
-<END 0 (OK)>
-
-<REPLY get(1006, func[1])>
-1006 func[1,0]
-<END 0 (OK)>
-
-<REPLY request(1005, control, force)>
-<END 0 (OK)>
- *
- */
 @Component
 public class EcosMessageParser {
     private static final Logger LOG = LoggerFactory.getLogger(EcosMessageParser.class);
